@@ -1,5 +1,6 @@
-from flask import Flask, jsonify, request
+from flask import Flask, render_template, jsonify, request
 from supabase import create_client, Client
+from config import supabase
 
 # Inicializar la app Flask
 app = Flask(__name__)
@@ -14,7 +15,7 @@ supabase: Client = create_client(url, key)
 # 🧩 RUTA PRINCIPAL
 @app.route('/')
 def home():
-    return "🚀 Servidor Flask corriendo correctamente con Supabase."
+    return render_template('index.html')
 
 # ============================================================
 # 📋 LEER TODOS LOS USUARIOS (GET)
@@ -33,7 +34,7 @@ def agregar_usuario():
     try:
         nuevo_usuario = request.get_json()
         response = supabase.table("Usuarios").insert(nuevo_usuario).execute()
-        return jsonify(response.data), 201
+        return jsonify({"message": "Usuario agregado"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -44,7 +45,7 @@ def actualizar_usuario(id):
     try:
         datos = request.get_json()
         response = supabase.table("Usuarios").update(datos).eq("id", id).execute()
-        return jsonify(response.data)
+        return jsonify({"message": "Usuario actualizado"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -54,7 +55,7 @@ def actualizar_usuario(id):
 def eliminar_usuario(id):
     try:
         response = supabase.table("Usuarios").delete().eq("id", id).execute()
-        return jsonify(response.data)
+        return jsonify({"message": "Usuario eliminado"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -64,6 +65,6 @@ import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=10000)
 
 

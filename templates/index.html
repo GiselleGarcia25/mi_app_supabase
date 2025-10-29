@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD con Supabase</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-4">
+        <h1 class="text-center mb-4">👩‍💻 CRUD de Usuarios (Supabase)</h1>
+
+        <form id="addForm" class="mb-4">
+            <div class="row g-2">
+                <div class="col"><input type="text" class="form-control" name="nombre" placeholder="Nombre" required></div>
+                <div class="col"><input type="email" class="form-control" name="correo" placeholder="Correo" required></div>
+                <div class="col"><input type="text" class="form-control" name="telefono" placeholder="Teléfono" required></div>
+                <div class="col-auto"><button class="btn btn-success">Agregar</button></div>
+            </div>
+        </form>
+
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="tabla"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const API = '/usuarios';
+
+        async function cargarUsuarios() {
+            const res = await fetch(API);
+            const data = await res.json();
+            const tbody = document.getElementById('tabla');
+            tbody.innerHTML = '';
+            data.forEach(u => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${u.id}</td>
+                        <td>${u.nombre}</td>
+                        <td>${u.correo}</td>
+                        <td>${u.telefono}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editarUsuario(${u.id})">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminarUsuario(${u.id})">Eliminar</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        document.getElementById('addForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const form = new FormData(e.target);
+            await fetch(API, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(Object.fromEntries(form))
+            });
+            e.target.reset();
+            cargarUsuarios();
+        });
+
+        async function eliminarUsuario(id) {
+            await fetch(`${API}/${id}`, { method: 'DELETE' });
+            cargarUsuarios();
+        }
+
+        async function editarUsuario(id) {
+            const nuevoNombre = prompt("Nuevo nombre:");
+            if (!nuevoNombre) return;
+            await fetch(`${API}/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nombre: nuevoNombre })
+            });
+            cargarUsuarios();
+        }
+
+        cargarUsuarios();
+    </script>
+</body>
+</html>
