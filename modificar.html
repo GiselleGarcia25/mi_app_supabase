@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Modificar Usuario</title>
+</head>
+<body>
+    <h2>Modificar usuario con ID {{ id }}</h2>
+
+    <form method="POST">
+        <label for="campo">¿Qué campo deseas modificar?</label><br>
+        <select name="campo" id="campo" required>
+            <option value="nombre">Nombre</option>
+            <option value="telefono">Teléfono</option>
+            <option value="correo">Correo</option>
+            <option value="id">ID</option>
+        </select><br><br>
+
+        <label for="nuevo_valor">Nuevo valor:</label><br>
+        <input type="text" name="nuevo_valor" id="nuevo_valor" required><br><br>
+
+        <button type="submit">Guardar cambios</button>
+    </form>
+
+    <br>
+    <a href="{{ url_for('index') }}">Volver</a>
+</body>
+</html>
