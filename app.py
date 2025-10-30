@@ -1,8 +1,10 @@
 from flask import Flask, render_template, jsonify, request
 from supabase import create_client, Client
+from flask_cors import CORS
 import os
 
 app = Flask(__name__)
+CORS(app)
 
 # Configura tu conexión Supabase
 url = "https://mrourfyaunnpgscktcgu.supabase.co"
@@ -27,15 +29,11 @@ def obtener_usuarios():
 def agregar_usuario():
     try:
         nuevo_usuario = request.get_json()
-        print("📩 Recibido:", nuevo_usuario)
-        response = supabase.table("Usuarios").insert({
-            "nombre": nuevo_usuario["nombre"],
-            "correo": nuevo_usuario["correo"],
-            "telefono": nuevo_usuario["telefono"]
-        }).execute()
-        return jsonify({"message": "Usuario agregado correctamente"}), 201
+        print("Datos recibidos:", nuevo_usuario)  # 👀 Log para depurar
+        response = supabase.table("Usuarios").insert(nuevo_usuario).execute()
+        return jsonify({"message": "Usuario agregado"}), 201
     except Exception as e:
-        print("❌ Error al agregar:", e)
+        print("Error al agregar:", e)
         return jsonify({"error": str(e)}), 500
 
 # ✏️ Actualizar usuario
